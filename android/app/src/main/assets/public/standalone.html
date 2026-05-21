@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>ATCO Timer (Standalone)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: black;
+            color: white;
+            margin: 0;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            text-align-last: center;
+        }
+
+        .timer-glow {
+            box-shadow: 0 0 50px -10px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+
+    <div class="w-full max-w-sm flex flex-col items-center">
+        <!-- Header -->
+        <header class="mb-12 text-center">
+            <div class="inline-flex items-center gap-2 mb-2 bg-blue-500/10 px-4 py-1 rounded-full border border-blue-500/20">
+                <i data-lucide="timer" class="w-4 h-4 text-blue-400"></i>
+                <span class="text-[10px] font-bold tracking-[0.2em] text-blue-400 uppercase">Aviation Grade</span>
+            </div>
+            <h1 class="text-4xl font-black tracking-tight">
+                ATCO <span class="text-blue-500">TIMER</span>
+            </h1>
+        </header>
+
+        <!-- Display -->
+        <div id="display-container" class="relative group mb-12 flex items-end justify-center gap-3">
+            <div class="flex flex-col items-center">
+                <span class="text-[10px] font-bold text-neutral-500 mb-1 tracking-wider">HH</span>
+                <select id="h" class="bg-transparent text-6xl md:text-7xl font-mono tabular-nums outline-none border-b-2 border-neutral-800 focus:border-blue-500 text-white w-24 text-center pb-2 transition-all">
+                    <!-- Options injected JS -->
+                </select>
+            </div>
+            <span class="text-4xl font-light text-neutral-700 pb-4">:</span>
+            <div class="flex flex-col items-center">
+                <span class="text-[10px] font-bold text-neutral-500 mb-1 tracking-wider">MM</span>
+                <select id="m" class="bg-transparent text-6xl md:text-7xl font-mono tabular-nums outline-none border-b-2 border-neutral-800 focus:border-blue-500 text-white w-24 text-center pb-2 transition-all">
+                    <!-- Options injected JS -->
+                </select>
+            </div>
+            <span class="text-4xl font-light text-neutral-700 pb-4">:</span>
+            <div class="flex flex-col items-center">
+                <span class="text-[10px] font-bold text-neutral-500 mb-1 tracking-wider">SS</span>
+                <select id="s" class="bg-transparent text-6xl md:text-7xl font-mono tabular-nums outline-none border-b-2 border-neutral-800 focus:border-blue-500 text-white w-24 text-center pb-2 transition-all">
+                    <!-- Options injected JS -->
+                </select>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex items-center gap-6 w-full justify-center">
+            <div class="flex flex-col items-center gap-2">
+                <button onclick="reset()" class="w-16 h-16 rounded-full bg-neutral-800 flex items-center justify-center hover:bg-neutral-700 transition-colors">
+                    <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
+                </button>
+                <span class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Reset</span>
+            </div>
+
+            <button id="toggleBtn" onclick="toggle()" class="w-24 h-24 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 active:scale-95 transition-all">
+                <i data-lucide="play" id="playIcon" class="w-10 h-10 fill-current ml-1"></i>
+                <i data-lucide="pause" id="pauseIcon" class="w-10 h-10 fill-current hidden"></i>
+            </button>
+            
+            <div class="w-16"></div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-20">
+            <p class="text-[10px] uppercase tracking-[0.3em] text-neutral-600 font-medium">
+                Created by MAZOUZI Abdelouahhab
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        let totalSeconds = 0;
+        let isRunning = false;
+        let interval = null;
+        let wakeLock = null;
+
+        const hSel = document.getElementById('h');
+        const mSel = document.getElementById('m');
+        const sSel = document.getElementById('s');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+
+        function init() {
+            lucide.createIcons();
+            populate(hSel, 23);
+            populate(mSel, 59);
+            populate(sSel, 59);
+
+            [hSel, mSel, sSel].forEach(s => {
+                s.addEventListener('change', () => {
+                    totalSeconds = (parseInt(hSel.value) * 3600) + (parseInt(mSel.value) * 60) + parseInt(sSel.value);
+                });
+            });
+        }
+
+        function populate(el, max) {
+            for(let i=0; i<=max; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = i.toString().padStart(2, '0');
+                opt.className = "bg-neutral-900 text-white";
+                el.appendChild(opt);
+            }
+        }
+
+        async function toggle() {
+            isRunning = !isRunning;
+            if (isRunning) {
+                start();
+            } else {
+                stop();
+            }
+        }
+
+        async function start() {
+            toggleBtn.classList.remove('bg-emerald-500');
+            toggleBtn.classList.add('bg-amber-500');
+            playIcon.classList.add('hidden');
+            pauseIcon.classList.remove('hidden');
+            
+            hSel.disabled = mSel.disabled = sSel.disabled = true;
+            hSel.classList.add('text-blue-400', 'border-transparent');
+            mSel.classList.add('text-blue-400', 'border-transparent');
+            sSel.classList.add('text-blue-400', 'border-transparent');
+
+            if ('wakeLock' in navigator) {
+                try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {}
+            }
+
+            interval = setInterval(() => {
+                totalSeconds = (totalSeconds + 1) % 86400;
+                updateDisplay();
+            }, 1000);
+        }
+
+        function stop() {
+            isRunning = false;
+            clearInterval(interval);
+            toggleBtn.classList.add('bg-emerald-500');
+            toggleBtn.classList.remove('bg-amber-500');
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
+
+            hSel.disabled = mSel.disabled = sSel.disabled = false;
+            hSel.classList.remove('text-blue-400', 'border-transparent');
+            mSel.classList.remove('text-blue-400', 'border-transparent');
+            sSel.classList.remove('text-blue-400', 'border-transparent');
+
+            if (wakeLock) {
+                wakeLock.release().then(() => wakeLock = null);
+            }
+        }
+
+        function reset() {
+            stop();
+            totalSeconds = 0;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = totalSeconds % 60;
+            hSel.value = h;
+            mSel.value = m;
+            sSel.value = s;
+        }
+
+        init();
+    </script>
+</body>
+</html>

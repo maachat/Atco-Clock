@@ -1,0 +1,6 @@
+{
+  "name": "ATCO Timer",
+  "description": "A professional aviation-inspired countdown and count-up timer with mobile-first design.",
+  "requestFramePermissions": ["screen-wake-lock"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

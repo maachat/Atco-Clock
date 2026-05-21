@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer Fine Tactical Compass Dials -->
+    <path
+        android:strokeColor="#1E293B"
+        android:strokeWidth="0.8"
+        android:pathData="M54,54 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0" />
+    <path
+        android:strokeColor="#0A84FF"
+        android:strokeWidth="1.5"
+        android:pathData="M54,54 m-40,0 a40,40 0 1,1 80,0 a40,40 0 1,1 -80,0" />
+
+    <!-- Crosshair Ticks representing compass/aviation dials (every 90 degrees) -->
+    <path
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:pathData="M54,14 L54,20 M54,88 L54,94 M14,54 L20,54 M88,54 L94,54" />
+
+    <!-- Diagonal 45-degree ticks -->
+    <path
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="0.6"
+        android:pathData="M27,27 L30,30 M81,27 L78,30 M27,81 L30,78 M81,81 L78,78" />
+
+    <!-- Tactical Target Crosshair chevrons / radar center -->
+    <path
+        android:strokeColor="#0A84FF"
+        android:strokeWidth="0.8"
+        android:pathData="M50,54 L46,54 M58,54 L62,54 M54,50 L54,46 M54,58 L54,62" />
+
+    <!-- Radar Scanning Sweep Line -->
+    <path
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:pathData="M54,54 L80,35" />
+
+    <!-- Center active display ring (Dashboard Instrument) -->
+    <path
+        android:fillColor="#070A0F"
+        android:strokeColor="#0A84FF"
+        android:strokeWidth="0.5"
+        android:pathData="M54,54 m-25,0 a25,25 0 1,1 50,0 a25,25 0 1,1 -50,0" />
+
+    <!-- Inner core glowing center dot -->
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M54,54 m-2.5,0 a2.5,2.5 0 1,1 5,0 a2.5,2.5 0 1,1 -5,0" />
+
+    <!-- Sleek Jet Silhouette flying upwards (Aviation Theme) in center -->
+    <path
+        android:fillColor="#30A2FF"
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="0.5"
+        android:strokeLineJoin="round"
+        android:pathData="M54,30 L55,37 L70,47 L60,47 L57,51 L60,54 L48,54 L51,51 L48,47 L38,47 L53,37 Z" />
+
+</vector>

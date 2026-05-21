@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ATCO Timer</string>
+    <string name="title_activity_main">ATCO Timer</string>
+    <string name="package_name">com.mazouzi.atcotimer</string>
+    <string name="custom_url_scheme">com.mazouzi.atcotimer</string>
+</resources>
